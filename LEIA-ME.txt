@@ -1,0 +1,76 @@
+PEGASUS - PACOTE PARA GERAR UM EXECUTAVEL WINDOWS
+
+Este pacote contem os fontes adaptados, NAO um executavel ja compilado.
+Base: Pegasus_v4 enviado em 19/10/2026. O GMAT permanece externo.
+
+1. NO COMPUTADOR DE QUEM VAI COMPILAR
+Extraia este ZIP para uma pasta nova (nao substitua o projeto original).
+Use o mesmo interpretador Python com que seu Pegasus + GMAT ja funcionam.
+Abra o Prompt de Comando nessa pasta e execute:
+
+python -m pip install "pyinstaller>=6.9,<7" numpy scipy pillow
+python build_windows.py
+
+Ou, depois de instalar as dependencias, abra compilar_windows.bat.
+Se voce usa um interpretador especifico, substitua python pelo caminho
+completo desse python.exe, entre aspas, nos dois comandos.
+O processo primeiro testa a API e so depois compila.
+Selecione a pasta do GMAT que contem bin e api.
+O arquivo final sera dist\Pegasus.exe. Somente ele precisa ser distribuido.
+ambiente_compilacao.json registra as versoes usadas; guarde-o para suporte.
+Nao e necessario copiar load_gmat.py, imagens ou Python junto ao exe.
+
+2. NO COMPUTADOR DE QUEM VAI USAR
+Instale/extraia a MESMA distribuicao Windows do GMAT validada na compilacao,
+com sua API Python. Inicialmente padronize a R2026a que voce esta usando.
+Abra Pegasus.exe e selecione a pasta que contem bin e api.
+Nas proximas execucoes a escolha sera reutilizada.
+Nao e preciso instalar Python nem executar o antigo BAT configurador.
+A versao major/minor e a arquitetura da API nativa do GMAT precisam ser
+compativeis com o Python incorporado ao exe. Nao se promete compatibilidade
+com todas as versoes do GMAT. Plugins nativos podem exigir runtimes do Windows.
+
+Se bin/api_startup_file.txt nao existir, o carregador tenta executar o
+BuildApiStartupFile.py oficial com o Python incorporado. Esse gerador e
+externo e depende da distribuicao do GMAT. Se houver erro, a mensagem e o
+log indicam a causa. Pastas protegidas como Program Files podem impedir a
+geracao de startup ou logs do proprio GMAT. Prefira uma pasta com permissao
+de escrita do usuario. Nao mova o GMAT depois de gerar o startup; caminhos
+absolutos antigos exigem regeneracao pelo procedimento da distribuicao.
+
+3. ARQUIVOS E CONFIGURACAO
+Resultados e scripts: %LOCALAPPDATA%\Pegasus
+Configuracao: %LOCALAPPDATA%\Pegasus\gmat.json
+Diagnostico da API: %LOCALAPPDATA%\Pegasus\erro_gmat.txt
+Saida Python do executavel: %LOCALAPPDATA%\Pegasus\execucao.log
+A interface mantem os botoes para abrir as pastas de resultados.
+Para escolher outro GMAT:
+Pegasus.exe --configurar-gmat
+Ou exclua somente gmat.json e abra o programa novamente.
+
+4. VALIDACAO OBRIGATORIA NO WINDOWS
+Primeiro rode python Pegasus.py e execute uma missao conhecida.
+Depois compile e repita a mesma missao no exe, comparando os resultados.
+Teste: selecao inicial, reabertura, PT/EN, voltar ao menu, geracao de scripts,
+execucao via API, abertura da interface GMAT e persistencia dos resultados
+apos fechar o Pegasus. Por fim teste em outro Windows sem Python instalado,
+com a mesma distribuicao do GMAT. Um import bem-sucedido nao valida toda a
+simulacao nem o exe final.
+
+VALIDACAO REALIZADA AQUI
+Sintaxe Python e verificacoes estaticas das alteracoes.
+Nao foi possivel executar GMAT, GUI Windows ou PyInstaller Windows neste
+ambiente Linux. A geracao automatica do startup com o gerador R2026a ainda
+precisa ser validada com a distribuicao real, que nao veio no ZIP.
+
+ALTERACOES
+- Selecao e persistencia do caminho externo do GMAT; carregamento dinamico.
+- Falha explicita com log quando a API nao inicia.
+- Resultados fora da extracao temporaria do executavel.
+- Reinicio adaptado ao PyInstaller onefile.
+- Icone e banner incorporados; isolamento do caminho DLL ao abrir GMAT externo.
+- Nenhuma alteracao intencional nos calculos da missao.
+
+Referencias:
+https://pyinstaller.org/en/stable/runtime-information.html
+https://pyinstaller.org/en/stable/common-issues-and-pitfalls.html
